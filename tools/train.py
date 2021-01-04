@@ -39,7 +39,7 @@ from utils.utils import create_logger
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Train classification network')
-    
+
     parser.add_argument('--cfg',
                         help='experiment configure file name',
                         required=True,
@@ -67,6 +67,7 @@ def parse_args():
 
     return args
 
+
 def main():
     args = parse_args()
 
@@ -81,12 +82,9 @@ def main():
     torch.backends.cudnn.deterministic = config.CUDNN.DETERMINISTIC
     torch.backends.cudnn.enabled = config.CUDNN.ENABLED
 
-    model = eval('models.'+config.MODEL.NAME+'.get_cls_net')(
-        config)
+    model = eval('models.' + config.MODEL.NAME + '.get_cls_net')(config)
 
-    dump_input = torch.rand(
-        (1, 3, config.MODEL.IMAGE_SIZE[1], config.MODEL.IMAGE_SIZE[0])
-    )
+    dump_input = torch.rand((1, 3, config.MODEL.IMAGE_SIZE[1], config.MODEL.IMAGE_SIZE[0]))
     logger.info(get_model_summary(model, dump_input))
 
     # copy model file
@@ -125,17 +123,15 @@ def main():
             logger.info("=> loaded checkpoint (epoch {})"
                         .format(checkpoint['epoch']))
             best_model = True
-            
+
     if isinstance(config.TRAIN.LR_STEP, list):
         lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(
             optimizer, config.TRAIN.LR_STEP, config.TRAIN.LR_FACTOR,
-            last_epoch-1
-        )
+            last_epoch - 1)
     else:
         lr_scheduler = torch.optim.lr_scheduler.StepLR(
             optimizer, config.TRAIN.LR_STEP, config.TRAIN.LR_FACTOR,
-            last_epoch-1
-        )
+            last_epoch - 1)
 
     # Data loading code
     traindir = os.path.join(config.DATASET.ROOT, config.DATASET.TRAIN_SET)
@@ -155,7 +151,7 @@ def main():
     )
     train_loader = torch.utils.data.DataLoader(
         train_dataset,
-        batch_size=config.TRAIN.BATCH_SIZE_PER_GPU*len(gpus),
+        batch_size=config.TRAIN.BATCH_SIZE_PER_GPU * len(gpus),
         shuffle=True,
         num_workers=config.WORKERS,
         pin_memory=True
@@ -168,7 +164,7 @@ def main():
             transforms.ToTensor(),
             normalize,
         ])),
-        batch_size=config.TEST.BATCH_SIZE_PER_GPU*len(gpus),
+        batch_size=config.TEST.BATCH_SIZE_PER_GPU * len(gpus),
         shuffle=False,
         num_workers=config.WORKERS,
         pin_memory=True
