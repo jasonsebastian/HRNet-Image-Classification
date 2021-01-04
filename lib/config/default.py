@@ -19,7 +19,7 @@ _C = CN()
 
 _C.OUTPUT_DIR = ''
 _C.LOG_DIR = ''
-_C.DATA_DIR = ''
+_C.DATA_DIR = 'data'
 _C.GPUS = (0,)
 _C.WORKERS = 4
 _C.PRINT_FREQ = 20
