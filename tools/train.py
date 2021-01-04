@@ -42,8 +42,8 @@ def parse_args():
 
     parser.add_argument('--cfg',
                         help='experiment configure file name',
-                        required=True,
-                        type=str)
+                        type=str,
+                        default='experiments/cls_hrnet_w32_sgd_lr5e-2_wd1e-4_bs32_x100.yaml')
 
     parser.add_argument('--modelDir',
                         help='model directory',
