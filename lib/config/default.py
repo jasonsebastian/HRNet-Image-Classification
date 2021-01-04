@@ -19,7 +19,7 @@ _C = CN()
 
 _C.OUTPUT_DIR = ''
 _C.LOG_DIR = ''
-_C.DATA_DIR = 'data'
+_C.DATA_DIR = ''
 _C.GPUS = (0,)
 _C.WORKERS = 4
 _C.PRINT_FREQ = 20
@@ -56,8 +56,8 @@ _C.LOSS.USE_DIFFERENT_JOINTS_WEIGHT = False
 # DATASET related params
 _C.DATASET = CN()
 _C.DATASET.ROOT = ''
-_C.DATASET.DATASET = 'mlr_market1501'
-_C.DATASET.TRAIN_SET = 'bounding_box_train'
+_C.DATASET.DATASET = 'mpii'
+_C.DATASET.TRAIN_SET = 'train'
 _C.DATASET.TEST_SET = 'valid'
 _C.DATASET.DATA_FORMAT = 'jpg'
 _C.DATASET.HYBRID_JOINTS_TYPE = ''

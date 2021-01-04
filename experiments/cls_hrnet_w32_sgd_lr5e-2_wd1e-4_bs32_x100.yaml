@@ -1,6 +1,6 @@
 GPUS: (0,1,2,3)
 LOG_DIR: 'log/'
-DATA_DIR: ''
+DATA_DIR: 'data/'
 OUTPUT_DIR: 'output/'
 WORKERS: 4
 PRINT_FREQ: 1000
