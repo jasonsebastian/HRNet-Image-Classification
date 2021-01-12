@@ -514,5 +514,5 @@ class HighResolutionNet(nn.Module):
 
 def get_cls_net(config, **kwargs):
     model = HighResolutionNet(config, **kwargs)
-    model.init_weights()
+    model.init_weights(config.MODEL.PRETRAINED)
     return model

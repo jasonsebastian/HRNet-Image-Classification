@@ -10,6 +10,7 @@ MODEL:
   IMAGE_SIZE: 
     - 224
     - 224
+  PRETRAINED: 'pretrained/hrnetv2_w32_imagenet_pretrained.pth'
   EXTRA:
     STAGE1:
       NUM_MODULES: 1
