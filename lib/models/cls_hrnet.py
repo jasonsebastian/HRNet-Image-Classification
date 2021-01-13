@@ -309,7 +309,7 @@ class HighResolutionNet(nn.Module):
         self.incre_modules, self.downsamp_modules, \
             self.final_layer = self._make_head(pre_stage_channels)
 
-        self.classifier = nn.Linear(2048, 1000)
+        self.classifier = nn.Linear(2048, cfg['MODEL']['NUM_CLASSES'])
 
     def _make_head(self, pre_stage_channels):
         head_block = Bottleneck
@@ -512,7 +512,8 @@ class HighResolutionNet(nn.Module):
             logger.info('=> loading pretrained model {}'.format(pretrained))
             model_dict = self.state_dict()
             pretrained_dict = {k: v for k, v in pretrained_dict.items()
-                               if k in model_dict.keys()}
+                               if k in model_dict.keys() and k != 'classifier.weight'
+                                                         and k != 'classifier.bias'}
             for k, _ in pretrained_dict.items():
                 logger.info(
                     '=> loading {} pretrained model {}'.format(k, pretrained))
