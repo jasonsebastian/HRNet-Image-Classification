@@ -69,7 +69,7 @@ DATASET:
   DATA_FORMAT: 'jpg'
   ROOT: 'data/mlr_market1501/'
   TEST_SET: 'pytorch/val'
-  TRAIN_SET: 'pytorch/train'
+  TRAIN_SET: 'pytorch/train_all'
 TEST:
   BATCH_SIZE_PER_GPU: 32
   MODEL_FILE: ''

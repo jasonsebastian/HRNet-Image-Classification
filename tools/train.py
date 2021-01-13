@@ -161,40 +161,17 @@ def main():
         pin_memory=True
     )
 
-    valid_loader = torch.utils.data.DataLoader(
-        datasets.ImageFolder(valdir, transforms.Compose([
-            transforms.Resize(int(config.MODEL.IMAGE_SIZE[0] / 0.875)),
-            transforms.CenterCrop(config.MODEL.IMAGE_SIZE[0]),
-            transforms.ToTensor(),
-            normalize,
-        ])),
-        batch_size=config.TEST.BATCH_SIZE_PER_GPU*len(gpus),
-        shuffle=False,
-        num_workers=config.WORKERS,
-        pin_memory=True
-    )
-
     for epoch in range(last_epoch, config.TRAIN.END_EPOCH):
         lr_scheduler.step()
         # train for one epoch
         train(config, train_loader, model, criterion, optimizer, epoch,
               final_output_dir, tb_log_dir, writer_dict)
-        # evaluate on validation set
-        perf_indicator = validate(config, valid_loader, model, criterion,
-                                  final_output_dir, tb_log_dir, writer_dict)
-
-        if perf_indicator > best_perf:
-            best_perf = perf_indicator
-            best_model = True
-        else:
-            best_model = False
 
         logger.info('=> saving checkpoint to {}'.format(final_output_dir))
         save_checkpoint({
             'epoch': epoch + 1,
             'model': config.MODEL.NAME,
             'state_dict': model.module.state_dict(),
-            'perf': perf_indicator,
             'optimizer': optimizer.state_dict(),
         }, best_model, final_output_dir, filename='checkpoint.pth.tar')
 
