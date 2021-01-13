@@ -20,7 +20,7 @@ import torch.nn as nn
 import torch._utils
 import torch.nn.functional as F
 
-from vdsr import VDSR
+from models.vdsr import VDSR
 
 BN_MOMENTUM = 0.1
 logger = logging.getLogger(__name__)
