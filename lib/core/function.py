@@ -38,7 +38,7 @@ def train(config, train_loader, model, criterion, optimizer, epoch,
         #target = target - 1 # Specific for imagenet
 
         # compute output
-        output = model(input)
+        output, sr = model(input)
         target = target.cuda(non_blocking=True)
 
         loss = criterion(output, target)

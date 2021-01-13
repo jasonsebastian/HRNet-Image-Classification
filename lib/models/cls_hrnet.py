@@ -20,6 +20,8 @@ import torch.nn as nn
 import torch._utils
 import torch.nn.functional as F
 
+from vdsr import VDSR
+
 BN_MOMENTUM = 0.1
 logger = logging.getLogger(__name__)
 
@@ -256,6 +258,8 @@ class HighResolutionNet(nn.Module):
     def __init__(self, cfg, **kwargs):
         super(HighResolutionNet, self).__init__()
 
+        self.vdsr = VDSR()
+
         self.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=2, padding=1,
                                bias=False)
         self.bn1 = nn.BatchNorm2d(64, momentum=BN_MOMENTUM)
@@ -440,6 +444,8 @@ class HighResolutionNet(nn.Module):
         return nn.Sequential(*modules), num_inchannels
 
     def forward(self, x):
+        x = self.vdsr(x)
+        sr = x
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
@@ -488,11 +494,13 @@ class HighResolutionNet(nn.Module):
 
         y = self.classifier(y)
 
-        return y
+        return y, sr
 
     def init_weights(self, pretrained='',):
         logger.info('=> init weights from normal distribution')
         for m in self.modules():
+            if m.__class__.__name__ == 'VDSR':
+                continue
             if isinstance(m, nn.Conv2d):
                 nn.init.kaiming_normal_(
                     m.weight, mode='fan_out', nonlinearity='relu')

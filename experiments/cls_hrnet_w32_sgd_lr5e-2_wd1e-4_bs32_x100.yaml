@@ -3,7 +3,7 @@ LOG_DIR: 'log/'
 DATA_DIR: 'data/'
 OUTPUT_DIR: 'output/'
 WORKERS: 2
-PRINT_FREQ: 1000
+PRINT_FREQ: 50
 
 MODEL: 
   NAME: cls_hrnet
