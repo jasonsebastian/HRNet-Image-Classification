@@ -497,10 +497,10 @@ class HighResolutionNet(nn.Module):
         return y, sr
 
     def init_weights(self, pretrained='',):
-        logger.info('=> init weights from normal distribution')
+        logger.info('=> init HRNet weights from normal distribution')
         for m in self.modules():
             if m.__class__.__name__ == 'VDSR':
-                continue
+                self.vdsr.init_weights()
             if isinstance(m, nn.Conv2d):
                 nn.init.kaiming_normal_(
                     m.weight, mode='fan_out', nonlinearity='relu')

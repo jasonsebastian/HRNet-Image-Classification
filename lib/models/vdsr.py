@@ -1,7 +1,10 @@
+import logging
 import math
 
 import torch
 import torch.nn as nn
+
+logger = logging.getLogger(__name__)
 
 
 class Conv_ReLU_Block(nn.Module):
@@ -22,11 +25,6 @@ class VDSR(nn.Module):
         self.output = nn.Conv2d(in_channels=64, out_channels=1, kernel_size=3, stride=1, padding=1, bias=False)
         self.relu = nn.ReLU(inplace=True)
 
-        for m in self.modules():
-            if isinstance(m, nn.Conv2d):
-                n = m.kernel_size[0] * m.kernel_size[1] * m.out_channels
-                m.weight.data.normal_(0, math.sqrt(2. / n))
-
     def make_layer(self, block, num_of_layer):
         layers = []
         for _ in range(num_of_layer):
@@ -40,3 +38,10 @@ class VDSR(nn.Module):
         out = self.output(out)
         out = torch.add(out,residual)
         return out
+        
+    def init_weights(self):
+        logger.info('=> init VDSR weights from normal distribution')
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                n = m.kernel_size[0] * m.kernel_size[1] * m.out_channels
+                m.weight.data.normal_(0, math.sqrt(2. / n))
