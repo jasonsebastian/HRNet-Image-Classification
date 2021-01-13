@@ -8,8 +8,8 @@ PRINT_FREQ: 1000
 MODEL: 
   NAME: cls_hrnet
   IMAGE_SIZE: 
-    - 224
-    - 224
+    - 64
+    - 128
   PRETRAINED: 'pretrained/hrnetv2_w32_imagenet_pretrained.pth'
   EXTRA:
     STAGE1:
@@ -65,9 +65,9 @@ CUDNN:
   DETERMINISTIC: false
   ENABLED: true
 DATASET:
-  DATASET: 'mlr_market1501'
+  DATASET: 'market1501'
   DATA_FORMAT: 'jpg'
-  ROOT: 'data/mlr_market1501/'
+  ROOT: 'data/market1501'
   TEST_SET: 'pytorch/val'
   TRAIN_SET: 'pytorch/train_all'
 TEST:
