@@ -1,8 +1,8 @@
-GPUS: (0,1,2,3)
+GPUS: (0,1)
 LOG_DIR: 'log/'
 DATA_DIR: 'data/'
 OUTPUT_DIR: 'output/'
-WORKERS: 4
+WORKERS: 2
 PRINT_FREQ: 1000
 
 MODEL: 
