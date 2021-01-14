@@ -140,7 +140,7 @@ class RandomCrop(object):
         Returns:
             tuple: params (i, j, h, w) to be passed to ``crop`` for random crop.
         """
-        w, h = F._get_image_size(img)
+        w, h = img.size
         th, tw = output_size
 
         if h + 1 < th or w + 1 < tw:
