@@ -32,19 +32,23 @@ def train(config, train_loader, model, criterion, optimizer, epoch,
     model.train()
 
     end = time.time()
-    for i, (input, target) in enumerate(train_loader):
+    for i, input in enumerate(train_loader):
+        original_image = input['original_image']
+        target = input['label']
+
         # measure data loading time
         data_time.update(time.time() - end)
         #target = target - 1 # Specific for imagenet
 
         # compute output
-        output = model(input)
+        output = model(input['downsampled_image'])
         target = target.cuda(non_blocking=True)
 
         y = output['prediction']
-        sr = output['super_resolution']
 
-        loss = criterion(y, target)
+        loss1 = criterion['person_reid'](y, target)
+        loss2 = criterion['super_resolution'](output['super_resolution'],
+                                              original_image)
 
         # compute gradient and do update step
         optimizer.zero_grad()

@@ -21,7 +21,6 @@ import torch.backends.cudnn as cudnn
 import torch.optim
 import torch.utils.data
 import torch.utils.data.distributed
-import torchvision.datasets as datasets
 import torchvision.transforms as transforms
 from tensorboardX import SummaryWriter
 
@@ -29,6 +28,7 @@ import _init_paths
 import models
 from config import config
 from config import update_config
+from core.datasets import ImagePersonDataset
 from core.function import train
 from core.function import validate
 from utils.modelsummary import get_model_summary
@@ -106,7 +106,10 @@ def main():
     model = torch.nn.DataParallel(model, device_ids=gpus).cuda()
 
     # define loss function (criterion) and optimizer
-    criterion = torch.nn.CrossEntropyLoss().cuda()
+    criterion = {
+        'person_reid': torch.nn.CrossEntropyLoss().cuda(),
+        'super_resolution': torch.nn.MSELoss().cuda()
+    }
 
     optimizer = get_optimizer(config, model)
 
@@ -139,20 +142,11 @@ def main():
 
     # Data loading code
     traindir = os.path.join(config.DATASET.ROOT, config.DATASET.TRAIN_SET)
-    valdir = os.path.join(config.DATASET.ROOT, config.DATASET.TEST_SET)
 
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                      std=[0.229, 0.224, 0.225])
 
-    train_dataset = datasets.ImageFolder(
-        traindir,
-        transforms.Compose([
-            transforms.RandomResizedCrop(config.MODEL.IMAGE_SIZE[0]),
-            transforms.RandomHorizontalFlip(),
-            transforms.ToTensor(),
-            normalize,
-        ])
-    )
+    train_dataset = ImagePersonDataset(config)
     train_loader = torch.utils.data.DataLoader(
         train_dataset,
         batch_size=config.TRAIN.BATCH_SIZE_PER_GPU*len(gpus),
