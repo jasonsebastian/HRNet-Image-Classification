@@ -49,6 +49,7 @@ def train(config, train_loader, model, criterion, optimizer, epoch,
         loss1 = criterion['person_reid'](y, target)
         loss2 = criterion['super_resolution'](output['super_resolution'],
                                               original_image)
+        loss = loss1 + loss2
 
         # compute gradient and do update step
         optimizer.zero_grad()
