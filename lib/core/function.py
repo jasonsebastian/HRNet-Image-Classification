@@ -38,10 +38,13 @@ def train(config, train_loader, model, criterion, optimizer, epoch,
         #target = target - 1 # Specific for imagenet
 
         # compute output
-        output, sr = model(input)
+        output = model(input)
         target = target.cuda(non_blocking=True)
 
-        loss = criterion(output, target)
+        y = output['prediction']
+        sr = output['super_resolution']
+
+        loss = criterion(y, target)
 
         # compute gradient and do update step
         optimizer.zero_grad()
@@ -51,7 +54,7 @@ def train(config, train_loader, model, criterion, optimizer, epoch,
         # measure accuracy and record loss
         losses.update(loss.item(), input.size(0))
 
-        prec1, prec5 = accuracy(output, target, (1, 5))
+        prec1, prec5 = accuracy(y, target, (1, 5))
 
         top1.update(prec1[0], input.size(0))
         top5.update(prec5[0], input.size(0))

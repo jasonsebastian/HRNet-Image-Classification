@@ -494,7 +494,7 @@ class HighResolutionNet(nn.Module):
 
         y = self.classifier(y)
 
-        return y, sr
+        return {'prediction': y, 'super_resolution': sr}
 
     def init_weights(self, pretrained='', num_classes=1000):
         logger.info('=> init HRNet weights from normal distribution')
