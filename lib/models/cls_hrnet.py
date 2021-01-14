@@ -496,7 +496,7 @@ class HighResolutionNet(nn.Module):
 
         return y, sr
 
-    def init_weights(self, pretrained='',):
+    def init_weights(self, pretrained='', num_classes=1000):
         logger.info('=> init HRNet weights from normal distribution')
         for m in self.modules():
             if m.__class__.__name__ == 'VDSR':
@@ -511,9 +511,13 @@ class HighResolutionNet(nn.Module):
             pretrained_dict = torch.load(pretrained)
             logger.info('=> loading pretrained model {}'.format(pretrained))
             model_dict = self.state_dict()
-            pretrained_dict = {k: v for k, v in pretrained_dict.items()
-                               if k in model_dict.keys() and k != 'classifier.weight'
-                                                         and k != 'classifier.bias'}
+            if num_classes != 1000:
+                pretrained_dict = {k: v for k, v in pretrained_dict.items()
+                                   if k in model_dict.keys() and k != 'classifier.weight'
+                                                             and k != 'classifier.bias'}
+            else:
+                pretrained_dict = {k: v for k, v in pretrained_dict.items()
+                                   if k in model_dict.keys()}
             for k, _ in pretrained_dict.items():
                 logger.info(
                     '=> loading {} pretrained model {}'.format(k, pretrained))
@@ -523,5 +527,5 @@ class HighResolutionNet(nn.Module):
 
 def get_cls_net(config, **kwargs):
     model = HighResolutionNet(config, **kwargs)
-    model.init_weights(config.MODEL.PRETRAINED)
+    model.init_weights(config.MODEL.PRETRAINED, config.MODEL.NUM_CLASSES)
     return model
