@@ -141,11 +141,6 @@ def main():
         )
 
     # Data loading code
-    traindir = os.path.join(config.DATASET.ROOT, config.DATASET.TRAIN_SET)
-
-    normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                     std=[0.229, 0.224, 0.225])
-
     train_dataset = ImagePersonDataset(config)
     train_loader = torch.utils.data.DataLoader(
         train_dataset,
