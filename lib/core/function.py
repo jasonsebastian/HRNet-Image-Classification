@@ -41,13 +41,14 @@ def train(config, train_loader, model, criterion, optimizer, epoch,
 
         # compute output
         output = model(input['downsampled_image'])
+        ground_truth = ground_truth.cuda(non_blocking=True)
         target = target.cuda(non_blocking=True)
 
         y = output['prediction']
 
-        loss1 = criterion['person_reid'](y, target)
-        loss2 = criterion['super_resolution'](output['super_resolution'],
+        loss1 = criterion['super_resolution'](output['super_resolution'],
                                               ground_truth)
+        loss2 = criterion['person_reid'](y, target)
         loss = loss1 + loss2
 
         # compute gradient and do update step
