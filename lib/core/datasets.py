@@ -127,40 +127,18 @@ class RandomCrop(object):
         size (sequence or int): Desired output size of the crop. If size is an
             int instead of sequence like (h, w), a square crop (size, size) is
             made. If provided a tuple or list of length 1, it will be interpreted as (size[0], size[0]).
+        padding (int or sequence, optional): Optional padding on each border
+            of the image. Default is None. If a single int is provided this
+            is used to pad all borders. If tuple of length 2 is provided this is the padding
+            on left/right and top/bottom respectively. If a tuple of length 4 is provided
+            this is the padding for the left, top, right and bottom borders respectively.
+            In torchscript mode padding as single int is not supported, use a tuple or
+            list of length 1: ``[padding, ]``.
     """
 
-    @staticmethod
-    def get_params(img, output_size):
-        """Get parameters for ``crop`` for a random crop.
-
-        Args:
-            img (PIL Image or Tensor): Image to be cropped.
-            output_size (tuple): Expected output size of the crop.
-
-        Returns:
-            tuple: params (i, j, h, w) to be passed to ``crop`` for random crop.
-        """
-        w, h = img.size
-        th, tw = output_size
-
-        if h + 1 < th or w + 1 < tw:
-            raise ValueError(
-                "Required crop size {} is larger then input image size {}".format((th, tw), (h, w))
-            )
-
-        if w == tw and h == th:
-            return 0, 0, h, w
-
-        i = torch.randint(0, h - th + 1, size=(1, )).item()
-        j = torch.randint(0, w - tw + 1, size=(1, )).item()
-        return i, j, th, tw
-
-    def __init__(self, size, padding=None, pad_if_needed=False, fill=0, padding_mode="constant"):
+    def __init__(self, size, padding=None):
         self.size = size
         self.padding = padding
-        self.pad_if_needed = pad_if_needed
-        self.fill = fill
-        self.padding_mode = padding_mode
 
     def __call__(self, sample):
         original_image = sample['original_image']
@@ -170,7 +148,7 @@ class RandomCrop(object):
             original_image = F.pad(original_image, self.padding, self.fill, self.padding_mode)
             downsampled_image = F.pad(downsampled_image, self.padding, self.fill, self.padding_mode)
 
-        i, j, h, w = self.get_params(original_image, self.size)
+        i, j, h, w = transforms.RandomCrop.get_params(original_image, self.size)
 
         return {'original_image': F.crop(sample['original_image'], i, j, h, w),
                 'downsampled_image': F.crop(sample['downsampled_image'], i, j, h, w),
