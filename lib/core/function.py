@@ -33,7 +33,7 @@ def train(config, train_loader, model, criterion, optimizer, epoch,
 
     end = time.time()
     for i, input in enumerate(train_loader):
-        original_image = input['original_image']
+        ground_truth = input['original_image']
         target = input['label']
 
         # measure data loading time
@@ -48,7 +48,7 @@ def train(config, train_loader, model, criterion, optimizer, epoch,
 
         loss1 = criterion['person_reid'](y, target)
         loss2 = criterion['super_resolution'](output['super_resolution'],
-                                              original_image)
+                                              ground_truth)
         loss = loss1 + loss2
 
         # compute gradient and do update step
