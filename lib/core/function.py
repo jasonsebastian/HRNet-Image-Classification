@@ -8,8 +8,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import time
 import logging
+import time
 
 import torch
 
@@ -26,7 +26,6 @@ def train(config, train_loader, model, criterion, optimizer, epoch,
     losses = AverageMeter()
     top1 = AverageMeter()
     top5 = AverageMeter()
-
 
     # switch to train mode
     model.train()
