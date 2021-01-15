@@ -1,3 +1,4 @@
+import logging
 import os
 import re
 
@@ -7,6 +8,9 @@ from torch import Tensor
 from torch.utils.data import Dataset
 from torchvision import transforms
 from torchvision.transforms import functional as F
+
+
+logger = logging.getLogger(__name__)
 
 
 class ImagePersonDataset(Dataset):
@@ -47,6 +51,7 @@ class ImagePersonDataset(Dataset):
         return sample
 
     def get_images_person(self):
+        logger.info('=> loading dataset image names to memory')
         img_filenames = [x for x in os.listdir(os.path.join(self.config.DATASET.DOWNSAMPLED_ROOT,
                                                             self.config.DATASET.TRAIN_SET))
                          if x.endswith('.{}'.format(self.config.DATASET.DATA_FORMAT))]
@@ -145,8 +150,8 @@ class RandomCrop(object):
         downsampled_image = sample['downsampled_image']
 
         if self.padding is not None:
-            original_image = F.pad(original_image, self.padding, self.fill, self.padding_mode)
-            downsampled_image = F.pad(downsampled_image, self.padding, self.fill, self.padding_mode)
+            original_image = F.pad(original_image, self.padding)
+            downsampled_image = F.pad(downsampled_image, self.padding)
 
         i, j, h, w = transforms.RandomCrop.get_params(original_image, self.size)
 
