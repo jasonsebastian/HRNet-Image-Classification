@@ -32,6 +32,8 @@ def train(config, train_loader, model, criterion, optimizer, epoch,
 
     end = time.time()
     for i, input in enumerate(train_loader):
+        batch_size = input['downsampled_image'].size(0)
+
         ground_truth = input['original_image']
         target = input['label']
 
@@ -57,12 +59,12 @@ def train(config, train_loader, model, criterion, optimizer, epoch,
         optimizer.step()
 
         # measure accuracy and record loss
-        losses.update(loss.item(), input.size(0))
+        losses.update(loss.item(), batch_size)
 
         prec1, prec5 = accuracy(y, target, (1, 5))
 
-        top1.update(prec1[0], input.size(0))
-        top5.update(prec5[0], input.size(0))
+        top1.update(prec1[0], batch_size)
+        top5.update(prec5[0], batch_size)
 
         # measure elapsed time
         batch_time.update(time.time() - end)
@@ -77,7 +79,7 @@ def train(config, train_loader, model, criterion, optimizer, epoch,
                   'Accuracy@1 {top1.val:.3f} ({top1.avg:.3f})\t' \
                   'Accuracy@5 {top5.val:.3f} ({top5.avg:.3f})\t'.format(
                       epoch, i, len(train_loader), batch_time=batch_time,
-                      speed=input.size(0)/batch_time.val,
+                      speed=batch_size/batch_time.val,
                       data_time=data_time, loss=losses, top1=top1, top5=top5)
             logger.info(msg)
 
