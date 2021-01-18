@@ -22,7 +22,7 @@ class ImagePersonDataset(Dataset):
         self.transform = transforms.Compose([
             Resize((256, 128)),
             RandomHorizontalFlip(),
-            RandomCrop((256, 128), 10),
+            RandomCrop((256, 128), padding=10),
             ToTensor(),
             Normalize(mean=[0.485, 0.456, 0.406],
                       std=[0.229, 0.224, 0.225])
