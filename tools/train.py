@@ -13,7 +13,6 @@ import argparse
 import os
 import pprint
 import shutil
-import sys
 
 import torch
 import torch.nn.parallel
@@ -21,7 +20,6 @@ import torch.backends.cudnn as cudnn
 import torch.optim
 import torch.utils.data
 import torch.utils.data.distributed
-import torchvision.transforms as transforms
 from tensorboardX import SummaryWriter
 
 import _init_paths
@@ -113,7 +111,6 @@ def main():
 
     optimizer = get_optimizer(config, model)
 
-    best_perf = 0.0
     best_model = False
     last_epoch = config.TRAIN.BEGIN_EPOCH
     if config.TRAIN.RESUME:
@@ -122,7 +119,6 @@ def main():
         if os.path.isfile(model_state_file):
             checkpoint = torch.load(model_state_file)
             last_epoch = checkpoint['epoch']
-            best_perf = checkpoint['perf']
             model.module.load_state_dict(checkpoint['state_dict'])
             optimizer.load_state_dict(checkpoint['optimizer'])
             logger.info("=> loaded checkpoint (epoch {})"
