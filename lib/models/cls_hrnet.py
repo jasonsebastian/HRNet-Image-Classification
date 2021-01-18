@@ -496,11 +496,11 @@ class HighResolutionNet(nn.Module):
 
         return {'prediction': y, 'super_resolution': sr}
 
-    def init_weights(self, pretrained='', num_classes=1000):
+    def init_weights(self, config, pretrained=''):
         logger.info('=> init HRNet weights from normal distribution')
         for m in self.modules():
             if m.__class__.__name__ == 'VDSR':
-                self.vdsr.init_weights()
+                self.vdsr.init_weights(config.MODEL.PRETRAINED_SR)
             if isinstance(m, nn.Conv2d):
                 nn.init.kaiming_normal_(
                     m.weight, mode='fan_out', nonlinearity='relu')
@@ -511,10 +511,10 @@ class HighResolutionNet(nn.Module):
             pretrained_dict = torch.load(pretrained)
             logger.info('=> loading pretrained model {}'.format(pretrained))
             model_dict = self.state_dict()
-            if num_classes != 1000:
+            if config.MODEL.NUM_CLASSES != 1000:
                 pretrained_dict = {k: v for k, v in pretrained_dict.items()
                                    if k in model_dict.keys() and k != 'classifier.weight'
-                                                             and k != 'classifier.bias'}
+                                   and k != 'classifier.bias'}
             else:
                 pretrained_dict = {k: v for k, v in pretrained_dict.items()
                                    if k in model_dict.keys()}
@@ -527,5 +527,5 @@ class HighResolutionNet(nn.Module):
 
 def get_cls_net(config, **kwargs):
     model = HighResolutionNet(config, **kwargs)
-    model.init_weights(config.MODEL.PRETRAINED, config.MODEL.NUM_CLASSES)
+    model.init_weights(config, config.MODEL.PRETRAINED)
     return model

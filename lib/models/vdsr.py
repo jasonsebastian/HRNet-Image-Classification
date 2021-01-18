@@ -1,5 +1,6 @@
 import logging
 import math
+import os
 
 import torch
 import torch.nn as nn
@@ -39,9 +40,20 @@ class VDSR(nn.Module):
         out = torch.add(out, residual)
         return out
 
-    def init_weights(self):
+    def init_weights(self, pretrained=''):
         logger.info('=> init VDSR weights from normal distribution')
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 n = m.kernel_size[0] * m.kernel_size[1] * m.out_channels
                 m.weight.data.normal_(0, math.sqrt(2. / n))
+        if os.path.isfile(pretrained):
+            pretrained_dict = torch.load(pretrained)
+            model_dict = self.state_dict()
+            pretrained_dict = {k: v for k, v in pretrained_dict.items()
+                               if k in model_dict.keys() and k != 'input.weight'
+                               and k != 'output.weight'}
+            for k, _ in pretrained_dict.items():
+                logger.info(
+                    '=> loading {} pretrained model {}'.format(k, pretrained))
+            model_dict.update(pretrained_dict)
+            self.load_state_dict(model_dict)
