@@ -36,9 +36,9 @@ class VDSR(nn.Module):
         out = self.relu(self.input(x))
         out = self.residual_layer(out)
         out = self.output(out)
-        out = torch.add(out,residual)
+        out = torch.add(out, residual)
         return out
-        
+
     def init_weights(self):
         logger.info('=> init VDSR weights from normal distribution')
         for m in self.modules():
