@@ -20,7 +20,7 @@ import torch.nn as nn
 import torch._utils
 import torch.nn.functional as F
 
-from models.vdsr import VDSR
+from models.vdsr import get_vdsr
 
 BN_MOMENTUM = 0.1
 logger = logging.getLogger(__name__)
@@ -258,7 +258,7 @@ class HighResolutionNet(nn.Module):
     def __init__(self, cfg, **kwargs):
         super(HighResolutionNet, self).__init__()
 
-        self.vdsr = VDSR()
+        self.vdsr = get_vdsr(cfg)
 
         self.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=2, padding=1,
                                bias=False)
@@ -496,11 +496,11 @@ class HighResolutionNet(nn.Module):
 
         return {'prediction': y, 'super_resolution': sr}
 
-    def init_weights(self, pretrained='', pretrained_sr=''):
+    def init_weights(self, pretrained=''):
         logger.info('=> init HRNet weights from normal distribution')
         for m in self.modules():
             if m.__class__.__name__ == 'VDSR':
-                self.vdsr.init_weights(pretrained_sr)
+                continue
             if isinstance(m, nn.Conv2d):
                 nn.init.kaiming_normal_(
                     m.weight, mode='fan_out', nonlinearity='relu')
@@ -522,7 +522,7 @@ class HighResolutionNet(nn.Module):
 
 def get_cls_net(config, **kwargs):
     model = HighResolutionNet(config, **kwargs)
-    model.init_weights(config.MODEL.PRETRAINED, config.MODEL.PRETRAINED_SR)
+    model.init_weights(config.MODEL.PRETRAINED)
     num_classes = config.MODEL.NUM_CLASSES
     if num_classes != 1000:
         model.classifier = nn.Linear(2048, num_classes)
