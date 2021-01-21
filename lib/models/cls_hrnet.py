@@ -309,7 +309,7 @@ class HighResolutionNet(nn.Module):
         self.incre_modules, self.downsamp_modules, \
             self.final_layer = self._make_head(pre_stage_channels)
 
-        self.classifier = nn.Linear(2048, cfg['MODEL']['NUM_CLASSES'])
+        self.classifier = nn.Linear(2048, 1000)
 
     def _make_head(self, pre_stage_channels):
         head_block = Bottleneck
@@ -496,11 +496,11 @@ class HighResolutionNet(nn.Module):
 
         return {'prediction': y, 'super_resolution': sr}
 
-    def init_weights(self, config, pretrained=''):
+    def init_weights(self, pretrained='', pretrained_sr=''):
         logger.info('=> init HRNet weights from normal distribution')
         for m in self.modules():
             if m.__class__.__name__ == 'VDSR':
-                self.vdsr.init_weights(config.MODEL.PRETRAINED_SR)
+                self.vdsr.init_weights(pretrained_sr)
             if isinstance(m, nn.Conv2d):
                 nn.init.kaiming_normal_(
                     m.weight, mode='fan_out', nonlinearity='relu')
@@ -511,13 +511,8 @@ class HighResolutionNet(nn.Module):
             pretrained_dict = torch.load(pretrained)
             logger.info('=> loading pretrained model {}'.format(pretrained))
             model_dict = self.state_dict()
-            if config.MODEL.NUM_CLASSES != 1000:
-                pretrained_dict = {k: v for k, v in pretrained_dict.items()
-                                   if k in model_dict.keys() and k != 'classifier.weight'
-                                   and k != 'classifier.bias'}
-            else:
-                pretrained_dict = {k: v for k, v in pretrained_dict.items()
-                                   if k in model_dict.keys()}
+            pretrained_dict = {k: v for k, v in pretrained_dict.items()
+                               if k in model_dict.keys()}
             for k, _ in pretrained_dict.items():
                 logger.info(
                     '=> loading {} pretrained model {}'.format(k, pretrained))
@@ -527,5 +522,8 @@ class HighResolutionNet(nn.Module):
 
 def get_cls_net(config, **kwargs):
     model = HighResolutionNet(config, **kwargs)
-    model.init_weights(config, config.MODEL.PRETRAINED)
+    model.init_weights(config.MODEL.PRETRAINED, config.MODEL.PRETRAINED_SR)
+    num_classes = config.MODEL.NUM_CLASSES
+    if num_classes != 1000:
+        model.classifier = nn.Linear(2048, num_classes)
     return model
